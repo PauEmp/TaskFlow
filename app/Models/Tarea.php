@@ -11,7 +11,8 @@ class Tarea extends Model
         'titulo',
         'descripcion',
         'user_id',
-        'completada'
+        'completada',
+        'categoria'
     ];
 
     public function user() {

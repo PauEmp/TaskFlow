@@ -38,8 +38,3 @@ class ApiController extends Controller
         return response()->json($nuevo, 201);
     }
 }
-
-
-/**
- * 
- */

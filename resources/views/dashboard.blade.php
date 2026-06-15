@@ -26,12 +26,14 @@
 <br><br>
     <input type="text" id="nueva_tarea_titulo" placeholder="Titulo de la tarea">
     <input type="text" id="nueva_tarea_desc" placeholder="Descripción">
+    <input type="text" id="nueva_tarea_categoria" placeholder="Categoria de la tarea">
     <button onclick="crearTarea()">Crear Tarea</button>
     <ul id="lista_tareas"></ul>
 <br>
-    <input type="number" id="tarea_id" placeholder="ID de la tarea">
-    <button onclick="cargarTarea()">Cargar Tarea</button>
+    <button onclick="cargarTareas()">Cargar Tareas</button>
     <ul id="cargar_tareas"></ul>
+<br>
+    <input type="number" id="tarea_id" placeholder="ID de la tarea">
     <button onclick="completarTarea()">Marcar como completada</button>
     <button onclick="borrarTarea()">Borrar tarea</button>
 <br><br>
@@ -98,7 +100,8 @@
                 },
                 body: JSON.stringify({
                     titulo: document.getElementById('nueva_tarea_titulo').value,
-                    descripcion: document.getElementById('nueva_tarea_desc').value
+                    descripcion: document.getElementById('nueva_tarea_desc').value,
+                    categoria: document.getElementById('nueva_tarea_categoria').value
                 })
             })
             .then(response => response.json())
@@ -107,7 +110,7 @@
                 alert('Tarea creada con éxito!');
             });
         }
-        function cargarTarea() {
+        function cargarTareas() {
             fetch('/api/tareas')
             .then(response => response.json())
             .then(datos => {
@@ -118,27 +121,32 @@
                     return;
                 }
                 datos.forEach(tarea => {
-                    lista.innerHTML += `<li>${tarea.id} - ${tarea.titulo}</li>`;
+                    lista.innerHTML += `<li>${tarea.id} - ${tarea.titulo} : ${tarea.categoria}</li>`;
                 });
             })
             .then(datos => console.log(datos));
         }
         function completarTarea() {
             const id = document.getElementById('tarea_id').value; // xk es id_user¿?
-            fetch(`/api/tareas/${id}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                },
-                body: JSON.stringify({
-                    titulo: 'Actualizado',
-                    descripcion: 'Actualizado',
-                    completada: true
-                })
-            })
+            fetch(`/api/tareas/${id}`)
             .then(response => response.json())
-            .then(datos => console.log(datos));
+            .then(tarea => {
+                fetch(`/api/tareas/${id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    },
+                    body: JSON.stringify({
+                        titulo: tarea.titulo,
+                        descripcion: tarea.descripcion,
+                        categoria: tarea.categoria,
+                        completada: true
+                    })
+                })
+                .then(response => response.json())
+                .then(datos => console.log(datos));
+            });
         }
         function borrarTarea() {
             const id = document.getElementById('tarea_id').value;
