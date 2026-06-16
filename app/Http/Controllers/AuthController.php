@@ -1,11 +1,12 @@
 <?php
 namespace App\Http\Controllers;
-
+// No se hace crear conn. Con Laravel es automático
 use Illuminate\Http\Request;
 // use Illuminate\Support\Facades\DB; // Importa la clase (DB)
 use Illuminate\Support\Facades\Hash;
 use App\Models\User; // Importa modelo user. Representa la tabla users.
-                    // No hace crear conn. Con Laravel es automático
+use Illuminate\Support\Facades\Auth;
+
 // creates a controller, named AController 
 class AuthController extends Controller {
     public function index() {
@@ -30,6 +31,16 @@ class AuthController extends Controller {
             return redirect('/dashboard');
         }
         return back()->with('error', 'Credenciales incorrectas');
+    }
+    public function apiLogin(Request $request) {
+        $usuario = $request->input('usuario');
+        $contrasena = $request->input('contrasena');
+        $fila = User::where('name', $usuario)->first();
+        if(!$fila || !Hash::check($contrasena, $fila->password)) {
+            return response()->json(['error' => 'Credenciales incorrectas'], 401);
+        }
+        $token = $fila->createToken('api-token')->plainTextToken;
+        return response()->json(['token' => $token, 'usuario' => $fila->name]);
     }
     // Show the dashboard: loads resources/views/dashboard.blade.php
     public function dashboard() {
@@ -66,5 +77,10 @@ class AuthController extends Controller {
         // Create User. Si no entra en ningún IF
         User::create(['name' => $usuario, 'email' => $email, 'password' => $contrasena]);
         return redirect('/');
+    }
+    // auth:sanctum valida el usuario, Laravel lo guarda en el objeto Request
+    public function perfil(Request $request) {
+        // $request->user() =  Auth::user()
+        return response()->json($request->user());
     }
 }

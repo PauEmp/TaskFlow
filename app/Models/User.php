@@ -7,12 +7,15 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable; 
 use App\Models\Tarea;  // Importa modelo Tarea para poder usarlo sin escribir su ruta completa
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
-
+    use HasApiTokens, HasFactory, Notifiable;
+    // HATokens: permite crear y validar tokens de API(Sanctum)
+    // HFactory: permite generar usuarios de prueba con factories
+    // Notifiable: permite enviar notificaciones (email, etc) al usuario
     /**
      * The attributes that are mass assignable.
      *

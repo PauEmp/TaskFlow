@@ -25,3 +25,8 @@ Route::post('/api/tareas', [TareaController::class, 'store'])->middleware(AuthMi
 Route::put('/api/tareas/{id}', [TareaController::class, 'update'])->middleware(AuthMiddleware::class);// Update
 Route::delete('/api/tareas/{id}', [TareaController::class, 'destroy'])->middleware(AuthMiddleware::class);// Delete
 Route::get('/api/tareas/{id}', [TareaController::class, 'show'])->middleware(AuthMiddleware::class);
+// Usuario recibe Token al hacer POST
+Route::post('/api/login', [AuthController::class, 'apiLogin']);
+// Proteger ruta con Sanctum, para que solo usuarios autenticados puedan acceder a ellas
+// Existe 1 ruta GET en /api/perfil. Al visitarla, se ejecutará el método perfil() de AuthController. Antes de ejecutarlo, Laravel aplicará el middleware auth:sanctum (verifica petición tiene auth. válida)
+Route::get('/api/perfil', [AuthController::class, 'perfil'])->middleware('auth:sanctum');
